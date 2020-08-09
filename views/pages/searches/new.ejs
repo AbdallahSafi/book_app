@@ -6,13 +6,13 @@
     <title>New Search</title>
   </head>
   <body>
-    <form>
+    <form action="/searches" method="POST">
       <label for="searchInput">Search by title or auther</label><br />
       <input id="searchInput" name="searchInput" /><br />
       <input type="radio" id="title" name="searchType" value="title" />
       <label for="title">Title</label>
       <input type="radio" id="author" name="searchType" value="author" />
-      <label for="author">Author</label><br>
+      <label for="author">Author</label><br />
       <input type="submit" value="submit" />
     </form>
   </body>

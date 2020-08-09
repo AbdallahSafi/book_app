@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 
 // Use super agent
-// const superagent = require('superagent');
+const superagent = require('superagent');
 
 // Declare a port
 const PORT = process.env.PORT || 3000;
@@ -29,7 +29,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('./public'));
 
 //set the encode for post body request
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 // test routes
 app.get('/', (req, res) => {
@@ -41,7 +41,47 @@ app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
 
-// // creating book constructor
-// function Books(){
+//Handle sreach request
+app.post('/searches', async (req, res) => {
+  let searchInput = req.body.searchInput;
+  let searchType = req.body.searchType;
+  let status = 200;
+  res.status(status).send(await getBooks(searchInput, searchType));
+});
 
-// }
+// fucntion to get books from google book api
+function getBooks(searchInput, searchType) {
+  let url = 'https://www.googleapis.com/books/v1/volumes';
+  let queryParams;
+  if (searchType === 'title') {
+    queryParams = {
+      q: `intitle:${searchInput}`,
+    };
+  } else {
+    queryParams = {
+      q: `inauthor:${searchInput}`,
+    };
+  }
+  let data = superagent
+    .get(url)
+    .query(queryParams)
+    .then((res) => {
+      return res.body.items.map(e =>{
+        return new Book(e);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return data;
+}
+
+// Render data in show
+
+// creating book constructor
+function Book(data) {
+  this.image = data.volumeInfo.imageLinks.thumbnail || 'https://i.imgur.com/J5LVHEL.jpg';
+  this.title = data.volumeInfo.title;
+  this.authers = data.volumeInfo.authors;
+  this.description = data.volumeInfo.description || 'There is no description';
+}
