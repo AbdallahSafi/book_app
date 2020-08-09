@@ -40,3 +40,8 @@ app.get('/', (req, res) => {
 app.get('/searches/new', (req, res) => {
   res.render('pages/searches/new');
 });
+
+// // creating book constructor
+// function Books(){
+
+// }
