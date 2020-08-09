@@ -46,22 +46,19 @@ app.post('/searches', async (req, res) => {
   let searchInput = req.body.searchInput;
   let searchType = req.body.searchType;
   let status = 200;
-  res.status(status).send(await getBooks(searchInput, searchType));
+  let booksList = await getBooks(searchInput, searchType);
+  // res.status(status).send();
+  res.render('pages/searches/show',{
+    books:booksList
+    })
 });
 
 // fucntion to get books from google book api
 function getBooks(searchInput, searchType) {
   let url = 'https://www.googleapis.com/books/v1/volumes';
-  let queryParams;
-  if (searchType === 'title') {
-    queryParams = {
-      q: `intitle:${searchInput}`,
+  let queryParams = {
+      q: `in${searchType}:${searchInput}`,
     };
-  } else {
-    queryParams = {
-      q: `inauthor:${searchInput}`,
-    };
-  }
   let data = superagent
     .get(url)
     .query(queryParams)
