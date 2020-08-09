@@ -80,7 +80,7 @@ function getBooks(searchInput, searchType) {
     .catch((error) => {
       return {
         status: error.status,
-        message: error.response.text,
+        message: error.response.text
       };
     });
   return result;
