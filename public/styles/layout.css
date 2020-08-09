@@ -6,54 +6,7 @@ header {
   justify-content: space-between;
 }
 
-header h1 {
-  color: #fff;
-  margin-left: 20px;
-  margin-top: auto;
-  margin-bottom: auto;
-  font-size: 13pt;
-}
 
-header i {
-  color: #fff;
-  margin-right: 20px;
-  font-size: 15pt;
-}
-
-main h2 {
-  background-color: grey;
-  color: #fff;
-  padding: 10px;
-  text-align: center;
-}
-body {
-  background-color: #eee;
-}
-form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-input[type="text"],
-fieldset,
-input[type="submit"] {
-  width: 80%;
-  padding: 12px 20px;
-  margin: 8px auto;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 10pt;
-}
-input[type="submit"] {
-  background-color: black;
-  color: #fff;
-}
-fieldset {
-  background-color: #ccc;
-}
 
 footer{
   position: fixed;
@@ -67,10 +20,3 @@ footer{
   align-items: center;
 }
 
-footer div{
-  height: 20px;
-  width: 20px;
-  background-color: #aaa;
-  border-radius: 50%;
-  display: inline-block;
-}
