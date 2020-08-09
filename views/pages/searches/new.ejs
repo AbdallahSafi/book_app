@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Search</title>
-</head>
-<body>
+  </head>
+  <body>
     <form>
-        <label for=''></label>
+      <label for="searchInput">Search by title or auther</label><br />
+      <input id="searchInput" name="searchInput" /><br />
+      <input type="radio" id="title" name="searchType" value="title" />
+      <label for="title">Title</label>
+      <input type="radio" id="author" name="searchType" value="author" />
+      <label for="author">Author</label><br>
+      <input type="submit" value="submit" />
     </form>
-</body>
+  </body>
 </html>

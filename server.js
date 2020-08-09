@@ -35,3 +35,8 @@ app.use(express.static('./public'));
 app.get('/', (req, res) => {
   res.render('pages/index');
 });
+
+// New search route
+app.get('/searches/new', (req, res) => {
+  res.render('pages/searches/new');
+});
