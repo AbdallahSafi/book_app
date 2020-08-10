@@ -72,6 +72,9 @@ app.post("/searches", async (req, res) => {
 app.get("/books/:id", async (req, res) => {
  let id = req.params.id;
  let book = await getBookByID(id);
+ res.render("pages/books/show", {
+  book: book,
+});
 });
 
 // fucntion to get books from google book api
@@ -125,6 +128,7 @@ function getBookByID(id) {
     .query(sql,values)
     .then((result) => {
     console.log(result);
+    return result.rows[0]
     })
     .catch((error) => {
       console.log(error);
