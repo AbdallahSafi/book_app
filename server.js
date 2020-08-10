@@ -37,14 +37,15 @@ app.use(express.static("./public"));
 //set the encode for post body request
 app.use(express.urlencoded({ extended: true }));
 
+//******************************* Routes *******************************//
+
 // Home route
 app.get("/", async (req, res) => {
   let result = await getBooksDB();
-    res.render("pages/index", {
-      books: result.books,
-      booksCount: result.booksCount
-    });
-
+  res.render("pages/index", {
+    books: result.books,
+    booksCount: result.booksCount,
+  });
 });
 
 // New search route
@@ -70,12 +71,23 @@ app.post("/searches", async (req, res) => {
 
 // Handle book details request
 app.get("/books/:id", async (req, res) => {
- let id = req.params.id;
- let book = await getBookByID(id);
- res.render("pages/books/show", {
-  book: book,
+  let id = req.params.id;
+  let book = await getBookByID(id);
+  res.render("pages/books/show", {
+    book: book,
+  });
 });
+
+// Handle save book to database request
+app.post("/books/", async (req, res) => {
+  let book = req.body;
+  saveBook(book);
+  //   res.render("pages/books/show", {
+  //    book: book,
+  //  });
 });
+
+//******************************* functions *******************************//
 
 // fucntion to get books from google book api
 function getBooks(searchInput, searchType) {
@@ -87,7 +99,7 @@ function getBooks(searchInput, searchType) {
     .get(url)
     .query(queryParams)
     .then((res) => {
-      console.log(res.body.items);
+      // console.log(res.body.items);
       let booksList = res.body.items.map((e) => {
         return new Book(e);
       });
@@ -110,10 +122,10 @@ function getBooksDB() {
   return db
     .query(sql)
     .then((result) => {
-     return {
-       books : result.rows,
-       booksCount: result.rowCount
-     }
+      return {
+        books: result.rows,
+        booksCount: result.rowCount,
+      };
     })
     .catch((error) => {
       console.log(error);
@@ -125,19 +137,43 @@ function getBookByID(id) {
   let sql = `SELECT * FROM books WHERE id=$1;`;
   let values = [id];
   return db
-    .query(sql,values)
+    .query(sql, values)
     .then((result) => {
-    console.log(result);
-    return result.rows[0]
+      // console.log(result);
+      return result.rows[0];
     })
     .catch((error) => {
       console.log(error);
     });
 }
+
+// save book to database
+function saveBook(book) {
+  let sql = `INSERT INTO books (author, title, isbn, image_url, description, bookshelf) VALUES ($1,$2,$3,$4,$5,$6)`;
+  let values = [
+    book.author,
+    book.title,
+    book.isbn,
+    book.image_url,
+    book.description,
+    "drama",
+  ];
+  return db
+    .query(sql, values)
+    .then((res) => {
+      console.log(res);
+      // return data;
+    })
+    .catch((error) => {
+      console.log("error", error);
+    });
+}
+
 // creating book constructor
 function Book(data) {
   this.image_url =
-    data.volumeInfo.imageLinks.thumbnail || "https://i.imgur.com/J5LVHEL.jpg";
+    (data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) ||
+    "https://i.imgur.com/J5LVHEL.jpg";
   this.title = data.volumeInfo.title;
   this.author = data.volumeInfo.authors;
   this.description = data.volumeInfo.description || "There is no description";
