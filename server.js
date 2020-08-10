@@ -81,10 +81,8 @@ app.get("/books/:id", async (req, res) => {
 // Handle save book to database request
 app.post("/books/", async (req, res) => {
   let book = req.body;
-  saveBook(book);
-  //   res.render("pages/books/show", {
-  //    book: book,
-  //  });
+  let lastID = await saveBook(book);
+  res.redirect(`/books/${lastID}`);    
 });
 
 //******************************* functions *******************************//
@@ -149,7 +147,7 @@ function getBookByID(id) {
 
 // save book to database
 function saveBook(book) {
-  let sql = `INSERT INTO books (author, title, isbn, image_url, description, bookshelf) VALUES ($1,$2,$3,$4,$5,$6)`;
+  let sql = `INSERT INTO books (author, title, isbn, image_url, description, bookshelf) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`;
   let values = [
     book.author,
     book.title,
@@ -162,7 +160,7 @@ function saveBook(book) {
     .query(sql, values)
     .then((res) => {
       console.log(res);
-      // return data;
+      return res.rows[0].id;
     })
     .catch((error) => {
       console.log("error", error);
