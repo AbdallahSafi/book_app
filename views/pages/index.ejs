@@ -28,6 +28,9 @@
           <li><img src=<%=book.image_url%> alt="image">
               <h3><%=book.title%></h3>
             <h4><%=book.author%></h4>  
+            <form action="/books/<%=book.id%>" method="GET">
+            <input type="submit" value="View Details">
+          </form>
           </li>
           <%});%>
           </ul>
