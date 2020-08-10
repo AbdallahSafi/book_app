@@ -20,7 +20,6 @@
   </head>
   <body>
     <%- include('../template/header')-%>
-    <main>
       <main>
         <h2>Books shelf have <%=booksCount%> books</h2>
         <ul>
@@ -28,11 +27,14 @@
           <li><img src=<%=book.image_url%> alt="image">
               <h3><%=book.title%></h3>
             <h4><%=book.author%></h4>  
+            <form action="/books/<%=book.id%>" method="GET">
+            <input type="submit" value="View Details">
+          </form>
           </li>
           <%});%>
           </ul>
       </main>
-    </main>
+   
     <%- include('../template/footer')-%>
 
   </body>

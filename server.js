@@ -58,7 +58,6 @@ app.post("/searches", async (req, res) => {
   let searchType = req.body.searchType;
   let result = await getBooks(searchInput, searchType);
   if (result.status === 200) {
-    // res.send(result.booksList);
     res.render("pages/searches/show", {
       books: result.booksList,
     });
@@ -67,6 +66,15 @@ app.post("/searches", async (req, res) => {
       error: result,
     });
   }
+});
+
+// Handle book details request
+app.get("/books/:id", async (req, res) => {
+ let id = req.params.id;
+ let book = await getBookByID(id);
+ res.render("pages/books/show", {
+  book: book,
+});
 });
 
 // fucntion to get books from google book api
@@ -102,11 +110,25 @@ function getBooksDB() {
   return db
     .query(sql)
     .then((result) => {
-      console.log(result.rows);
      return {
        books : result.rows,
        booksCount: result.rowCount
      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Get book by ID from database
+function getBookByID(id) {
+  let sql = `SELECT * FROM books WHERE id=$1;`;
+  let values = [id];
+  return db
+    .query(sql,values)
+    .then((result) => {
+    console.log(result);
+    return result.rows[0]
     })
     .catch((error) => {
       console.log(error);
