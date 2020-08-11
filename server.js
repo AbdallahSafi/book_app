@@ -93,8 +93,10 @@ async function handleSearches(req, res){
 async function handleBookDetails(req, res){
     let id = req.params.id;
     let book = await getBookByID(id);
+    let bookshelfs = await getBookshelfs();
     res.render("pages/books/show", {
       book: book,
+      bookshelfs: bookshelfs
     });
 }
 
@@ -181,6 +183,19 @@ function saveBook(book) {
     .then((res) => {
       // console.log(res);
       return res.rows[0].id;
+    })
+    .catch((error) => {
+      console.log("error", error);
+    });
+}
+
+// get all bookshilfs in thae database
+function getBookshelfs(){
+  let sql = 'SELECT DISTINCT bookshelf FROM books';
+  return db
+    .query(sql)
+    .then((res) => {
+      return res.rows;
     })
     .catch((error) => {
       console.log("error", error);
