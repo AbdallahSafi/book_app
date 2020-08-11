@@ -5,7 +5,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config(".env");
 const pg = require("pg");
-var methodOverride = require('method-override')
+var methodOverride = require("method-override");
 
 //create connection to database
 var db = new pg.Client(process.env.DATABASE_URL);
@@ -23,7 +23,7 @@ const superagent = require("superagent");
 const PORT = process.env.PORT || 3000;
 
 // override with POST having ?_method=DELETE
-app.use(methodOverride('_method'))
+app.use(methodOverride("_method"));
 
 // Test the server
 db.connect().then(() => {
@@ -44,50 +44,66 @@ app.use(express.urlencoded({ extended: true }));
 //******************************* Routes *******************************//
 
 // Home route
-app.get("/", async (req, res) => {
+app.get("/", handleHome);
+
+// New search route
+app.get("/searches/new", handleNew);
+
+//Handle sreach request
+app.post("/searches", handleSearches);
+
+// Handle book details request
+app.get("/books/:id",handleBookDetails);
+
+// Handle save book to database request
+app.post("/books/", handleSaveBook);
+
+//******************************* Handling Routes *******************************//
+// Home route
+async function handleHome(req, res) {
   let result = await getBooksDB();
   res.render("pages/index", {
     books: result.books,
     booksCount: result.booksCount,
   });
-});
+}
 
-// New search route
-app.get("/searches/new", (req, res) => {
+//Searches new form route
+function handleNew(req, res) {
   res.render("pages/searches/new");
-});
+}
 
-//Handle sreach request
-app.post("/searches", async (req, res) => {
-  let searchInput = req.body.searchInput;
-  let searchType = req.body.searchType;
-  let result = await getBooks(searchInput, searchType);
-  if (result.status === 200) {
-    res.render("pages/searches/show", {
-      books: result.booksList,
-    });
-  } else {
-    res.render("pages/error", {
-      error: result,
-    });
+//Searches result
+async function handleSearches(req, res){
+    let searchInput = req.body.searchInput;
+    let searchType = req.body.searchType;
+    let result = await getBooks(searchInput, searchType);
+    if (result.status === 200) {
+      res.render("pages/searches/show", {
+        books: result.booksList,
+      });
+    } else {
+      res.render("pages/error", {
+        error: result,
+      });
   }
-});
+}
 
-// Handle book details request
-app.get("/books/:id", async (req, res) => {
-  let id = req.params.id;
-  let book = await getBookByID(id);
-  res.render("pages/books/show", {
-    book: book,
-  });
-});
+// Search book details
+async function handleBookDetails(req, res){
+    let id = req.params.id;
+    let book = await getBookByID(id);
+    res.render("pages/books/show", {
+      book: book,
+    });
+}
 
-// Handle save book to database request
-app.post("/books/", async (req, res) => {
-  let book = req.body;
-  let lastID = await saveBook(book);
-  res.redirect(`/books/${lastID}`);    
-});
+// save book route
+async function handleSaveBook(req, res){
+    let book = req.body;
+    let lastID = await saveBook(book);
+    res.redirect(`/books/${lastID}`);
+}
 
 //******************************* functions *******************************//
 
@@ -163,7 +179,7 @@ function saveBook(book) {
   return db
     .query(sql, values)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       return res.rows[0].id;
     })
     .catch((error) => {

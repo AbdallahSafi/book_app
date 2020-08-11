@@ -118,7 +118,9 @@ form {
 
 input[type="text"],
 fieldset,
-input[type="submit"] {
+input[type="submit"],
+textarea,
+button{
   width: 80%;
   padding: 12px 20px;
   margin: 8px auto;
@@ -128,13 +130,28 @@ input[type="submit"] {
   box-sizing: border-box;
   font-size: 10pt;
 }
-input[type="submit"] {
+
+label{
+  width: 80%;
+  margin: 8px auto;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: capitalize;
+  font-size: 10pt;
+
+
+}
+input[type="submit"], button {
   background-color: black;
   color: #fff;
   cursor: pointer;
 }
 fieldset {
   background-color: #ccc;
+}
+.flex-box{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Footer */
