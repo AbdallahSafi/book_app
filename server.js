@@ -174,7 +174,7 @@ function saveBook(book) {
     book.isbn,
     book.image_url,
     book.description,
-    "drama",
+    book.bookshelf,
   ];
   return db
     .query(sql, values)
@@ -187,6 +187,8 @@ function saveBook(book) {
     });
 }
 
+
+// ******************* Book Constructor ****************** //
 // creating book constructor
 function Book(data) {
   this.image_url =
