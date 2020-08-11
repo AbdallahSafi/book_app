@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config(".env");
 const pg = require("pg");
+var methodOverride = require('method-override')
 
 //create connection to database
 var db = new pg.Client(process.env.DATABASE_URL);
@@ -20,6 +21,9 @@ const superagent = require("superagent");
 
 // Declare a port
 const PORT = process.env.PORT || 3000;
+
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'))
 
 // Test the server
 db.connect().then(() => {
