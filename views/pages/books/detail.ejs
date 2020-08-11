@@ -22,8 +22,12 @@ function toggleEdit() {
       <p>ISBN: <%=book.isbn%></p>
       <p>Bookshelf: <%=book.bookshelf%></p>
       <div class="flex-box">
-         <button onclick="toggleEdit()">Update details</button>
-         <button>Delete book</button>
+        <form>
+          <button type='button' onclick="toggleEdit()">Update details</button>
+        </form>
+         <form action ="/books/<%= book.id %>?_method=DELETE" method='POST'>
+          <button type="submit">Delete book</button>
+         </form>
       </div>
       <%- include('edit')-%>
 </section>
