@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config(".env");
 const pg = require("pg");
+var methodOverride = require("method-override");
 
 //create connection to database
 var db = new pg.Client(process.env.DATABASE_URL);
@@ -20,6 +21,9 @@ const superagent = require("superagent");
 
 // Declare a port
 const PORT = process.env.PORT || 3000;
+
+// override http methods
+app.use(methodOverride("_method"));
 
 // Test the server
 db.connect().then(() => {
@@ -40,21 +44,43 @@ app.use(express.urlencoded({ extended: true }));
 //******************************* Routes *******************************//
 
 // Home route
-app.get("/", async (req, res) => {
+app.get("/", handleHome);
+
+// New search route
+app.get("/searches/new", handleNew);
+
+//Handle sreach request
+app.post("/searches", handleSearches);
+
+// Handle book details request
+app.get("/books/:id", handleBookDetails);
+
+// Handle book edit
+app.put("/books/:id", handleBookEdit);
+
+// Handle book delete
+app.delete("/books/:id", handleBookDelete);
+
+// Handle save book to database request
+app.post("/books/", handleSaveBook);
+
+//******************************* Handling Routes *******************************//
+// Home
+async function handleHome(req, res) {
   let result = await getBooksDB();
   res.render("pages/index", {
     books: result.books,
     booksCount: result.booksCount,
   });
-});
+}
 
-// New search route
-app.get("/searches/new", (req, res) => {
+//Searches new form route
+function handleNew(req, res) {
   res.render("pages/searches/new");
-});
+}
 
-//Handle sreach request
-app.post("/searches", async (req, res) => {
+//Searches result
+async function handleSearches(req, res) {
   let searchInput = req.body.searchInput;
   let searchType = req.body.searchType;
   let result = await getBooks(searchInput, searchType);
@@ -67,23 +93,40 @@ app.post("/searches", async (req, res) => {
       error: result,
     });
   }
-});
+}
 
-// Handle book details request
-app.get("/books/:id", async (req, res) => {
+// Search book details
+async function handleBookDetails(req, res) {
   let id = req.params.id;
   let book = await getBookByID(id);
+  let bookshelfs = await getBookshelfs();
   res.render("pages/books/show", {
     book: book,
+    bookshelfs: bookshelfs,
   });
-});
+}
 
-// Handle save book to database request
-app.post("/books/", async (req, res) => {
+// save book route
+async function handleSaveBook(req, res) {
   let book = req.body;
   let lastID = await saveBook(book);
-  res.redirect(`/books/${lastID}`);    
-});
+  res.redirect(`/books/${lastID}`);
+}
+
+//Edit book
+async function handleBookEdit(req, res) {
+  let book = req.body;
+  let id = req.params.id;
+  await updateBook(id, book);
+  res.redirect(`/books/${id}`);
+}
+
+//Delete book
+async function handleBookDelete(req, res) {
+  let id = req.params.id;
+  await deleteBook(id);
+  res.redirect("/");
+}
 
 //******************************* functions *******************************//
 
@@ -154,12 +197,12 @@ function saveBook(book) {
     book.isbn,
     book.image_url,
     book.description,
-    "drama",
+    book.bookshelf,
   ];
   return db
     .query(sql, values)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       return res.rows[0].id;
     })
     .catch((error) => {
@@ -167,6 +210,59 @@ function saveBook(book) {
     });
 }
 
+// get all bookshilfs in thae database
+function getBookshelfs() {
+  let sql = "SELECT DISTINCT bookshelf FROM books";
+  return db
+    .query(sql)
+    .then((res) => {
+      return res.rows;
+    })
+    .catch((error) => {
+      console.log("error", error);
+    });
+}
+
+// function to update book in the database
+function updateBook(id, book) {
+  let sql =
+    "UPDATE books SET author = $1, title = $2, isbn= $3, image_url =$4, description =$5, bookshelf=$6 WHERE id = $7;";
+  let values = [
+    book.author,
+    book.title,
+    book.isbn,
+    book.image_url,
+    book.description,
+    book.bookshelf,
+    id,
+  ];
+
+  return db
+    .query(sql, values)
+    .then((res) => {
+      console.log(res);
+      // return res.rows[0].id;
+    })
+    .catch((error) => {
+      console.log("error", error);
+    });
+}
+
+//function to delete a book from database
+function deleteBook(id){
+  let sql = 'DELETE FROM books WHERE id=$1';
+  let values =[id];
+  return db
+  .query(sql, values)
+  .then((res) => {
+    // console.log(res);
+  })
+  .catch((error) => {
+    console.log("error", error);
+  });
+
+}
+// ******************* Book Constructor ****************** //
 // creating book constructor
 function Book(data) {
   this.image_url =
