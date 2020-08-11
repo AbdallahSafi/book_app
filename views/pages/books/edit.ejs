@@ -24,13 +24,13 @@
     cols="10">
   <%= book.description %>
   </textarea>
-  <label for='bookshelf'>add to a bookshelf</label>
-  <input list="bookshelfs" name="bookshelf" id="bookshelf" type="text"  autocomplete=”off”  value="<%= book.bookshelf %>">
+  <label for="bookshelf">add to a bookshelf</label>
+  <input list="bookshelfs" name="bookshelf" id="bookshelf" type="text" autocomplete="off" value="<%= book.bookshelf %>">
   <datalist id="bookshelfs">
-    <%bookshelfs.forEach((item) => {%>
-    <option value="<%=item.bookshelf%>">
-      <%});%>
+      <%bookshelfs.forEach((item) => {%>
+        <option value="<%=item.bookshelf%>">
+          <%});%>
   </datalist>
-
   <input type="submit" value="Edit" />
 </form>
+
